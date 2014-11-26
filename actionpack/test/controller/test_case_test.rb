@@ -711,6 +711,11 @@ XML
     assert_equal File.open(path, READ_PLAIN).read, plain_file_upload.read
   end
 
+  def test_fixture_file_upload_should_be_able_access_to_tempfile
+    file = fixture_file_upload(FILES_DIR + "/mona_lisa.jpg", "image/jpg")
+    assert_equal true, file.respond_to?(:tempfile) 
+  end
+
   def test_fixture_file_upload
     post :test_file_upload, :file => fixture_file_upload(FILES_DIR + "/mona_lisa.jpg", "image/jpg")
     assert_equal '159528', @response.body
