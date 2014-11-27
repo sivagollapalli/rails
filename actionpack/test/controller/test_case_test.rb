@@ -713,7 +713,7 @@ XML
 
   def test_fixture_file_upload_should_be_able_access_to_tempfile
     file = fixture_file_upload(FILES_DIR + "/mona_lisa.jpg", "image/jpg")
-    assert_equal true, file.respond_to?(:tempfile) 
+    assert file.respond_to?(:tempfile), "expected tempfile should respond on fixture file object, got nothing"
   end
 
   def test_fixture_file_upload
