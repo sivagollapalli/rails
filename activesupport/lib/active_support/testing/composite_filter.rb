@@ -3,7 +3,7 @@ require 'method_source'
 module ActiveSupport
   module Testing
     class CompositeFilter # :nodoc:
-      def initialize(runnable, filter, file, line)
+      def initialize(runnable, filter, file, line = nil)
         @runnable = runnable
         @filters = [ derive_regexp(filter), *build_filter(file, line) ].compact
       end

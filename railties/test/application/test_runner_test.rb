@@ -294,6 +294,75 @@ module ApplicationTests
       end
     end
 
+    def test_more_than_one_line_filter
+      app_file 'test/models/post_test.rb', <<-RUBY
+        require 'test_helper'
+
+        class PostTest < ActiveSupport::TestCase
+          def test_post
+            assert true
+          end
+
+          def testing_the_post
+            assert true
+          end
+
+          def test_line_filter_does_not_run_this
+            assert true
+          end
+        end
+      RUBY
+
+      run_test_command('test/models/post_test.rb:4:8').tap do |output|
+        assert_match 'PostTest', output
+        assert_match '2 runs, 2 assertions', output
+      end
+    end
+
+    def test_more_than_one_line_filter_with_multiple_files
+      app_file 'test/models/account_test.rb', <<-RUBY
+        require 'test_helper'
+
+        class AccountTest < ActiveSupport::TestCase
+          def test_account
+            assert true
+          end
+
+          def testing_the_account
+            assert true
+          end
+
+          def test_line_filter_does_not_run_this
+            assert true
+          end
+        end
+      RUBY
+
+      app_file 'test/models/post_test.rb', <<-RUBY
+        require 'test_helper'
+
+        class PostTest < ActiveSupport::TestCase
+          def test_post
+            assert true
+          end
+
+          def testing_the_post
+            assert true
+          end
+
+          def test_line_filter_does_not_run_this
+            assert true
+          end
+        end
+      RUBY
+
+      run_test_command('test/models/post_test.rb:4:8 test/models/account_test:4:8').tap do |output|
+        assert_match 'PostTest', output
+        assert_match 'AccountTest', output
+        assert_match '4 runs, 4 assertions', output
+      end
+    end
+
     def test_multiple_line_filters
       create_test_file :models, 'account'
       create_test_file :models, 'post'
