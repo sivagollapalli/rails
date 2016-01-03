@@ -299,21 +299,22 @@ module ApplicationTests
         require 'test_helper'
 
         class PostTest < ActiveSupport::TestCase
-          def test_post
+          test "test post" do
+            puts 'PostTest'
             assert true
           end
 
-          def testing_the_post
+          test "testing the post" do
             assert true
           end
 
-          def test_line_filter_does_not_run_this
+          test "test line filter does not run this" do
             assert true
           end
         end
       RUBY
 
-      run_test_command('test/models/post_test.rb:4:8').tap do |output|
+      run_test_command('test/models/post_test.rb:4:9').tap do |output|
         assert_match 'PostTest', output
         assert_match '2 runs, 2 assertions', output
       end
@@ -324,15 +325,16 @@ module ApplicationTests
         require 'test_helper'
 
         class AccountTest < ActiveSupport::TestCase
-          def test_account
+          test "test account" do
+            puts 'AccountTest'
             assert true
           end
 
-          def testing_the_account
+          test "testing the account" do
             assert true
           end
 
-          def test_line_filter_does_not_run_this
+          test "test line filter does not run this" do
             assert true
           end
         end
@@ -342,23 +344,24 @@ module ApplicationTests
         require 'test_helper'
 
         class PostTest < ActiveSupport::TestCase
-          def test_post
+          test "test post" do
+            puts 'PostTest'
             assert true
           end
 
-          def testing_the_post
+          test "testing the post" do
             assert true
           end
 
-          def test_line_filter_does_not_run_this
+          test "test line filter does not run this" do
             assert true
           end
         end
       RUBY
 
-      run_test_command('test/models/post_test.rb:4:8 test/models/account_test:4:8').tap do |output|
-        assert_match 'PostTest', output
+      run_test_command('test/models/account_test.rb:4:9  test/models/post_test:4:9').tap do |output|
         assert_match 'AccountTest', output
+        assert_match 'PostTest', output
         assert_match '4 runs, 4 assertions', output
       end
     end
