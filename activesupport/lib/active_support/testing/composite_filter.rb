@@ -3,9 +3,9 @@ require 'method_source'
 module ActiveSupport
   module Testing
     class CompositeFilter # :nodoc:
-      def initialize(runnable, filter, file, line = nil)
+      def initialize(runnable, filter, patterns)
         @runnable = runnable
-        @filters = [ derive_regexp(filter), *build_filter(file, line) ].compact
+        @filters = [ derive_regexp(filter), *derive_line_filters(patterns) ].compact
       end
 
       def ===(method)
@@ -17,12 +17,20 @@ module ActiveSupport
           filter =~ %r%/(.*)/% ? Regexp.new($1) : filter
         end
 
-        def build_filter(file, line)
-          Filter.new(@runnable, file, line) if file
+        def derive_line_filters(patterns)
+          patterns.flat_map do |file_and_line|
+            file, *lines = file_and_line.split(':')
+
+            if lines.empty?
+              Filter.new(@runnable, file) if file
+            else
+              lines.map { |line| Filter.new(@runnable, file, line) }
+            end
+          end
         end
 
         class Filter # :nodoc:
-          def initialize(runnable, file, line)
+          def initialize(runnable, file, line = nil)
             @runnable, @file = runnable, File.expand_path(file)
             @line = line.to_i if line
           end
